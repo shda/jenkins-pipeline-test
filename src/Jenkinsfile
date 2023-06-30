@@ -1,5 +1,3 @@
-UNITY_PATH = "C:/Program Files/Unity/Hub/Editor/2021.1.28f1/Editor/Unity.exe"
-
 pipeline {
     parameters {
         choice(name: 'NODE', choices: ['win', 'mac'], description: 'Node')
@@ -20,7 +18,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    unity.execute(UNITY_PATH, '.', 'JenkinsBuilder.Build', 'android')
+                    unity.execute(env.UNITY_PATH, '.', 'JenkinsBuilder.Build', 'android')
                 }
             }
         }
