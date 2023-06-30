@@ -1,0 +1,24 @@
+UNITY_PATH = "C:/Program Files/Unity/Hub/Editor/2021.1.28f1/Editor/Unity.exe"
+
+pipeline {
+    parameters {
+        choice(name: 'NODE', choices: ['win', 'mac'], description: 'Node')
+    }
+
+    agent {
+        label params.NODE
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'dev',
+                        credentialsId: 'bitbucket',
+                        url: 'https://bitbucket.org/prosaas/cryptotanks-unity.git'
+            }
+        }
+        stage('Build') {
+            unity.execute('.')
+        }
+    }
+}
