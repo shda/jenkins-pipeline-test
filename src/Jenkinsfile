@@ -20,7 +20,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    unity.execute(UNITY_PATH, '.', buildTarget = "android", methodToExecute = "JenkinsBuilder.Build")
+                    unity.execute(UNITY_PATH, '.', 'JenkinsBuilder.Build', 'android')
                 }
             }
         }
