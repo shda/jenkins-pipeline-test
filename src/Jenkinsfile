@@ -18,7 +18,6 @@ pipeline {
             }
         }
         stage('Build') {
-            unity2.mm
             unity.execute('.')
         }
     }
