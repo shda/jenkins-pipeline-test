@@ -18,7 +18,7 @@ pipeline {
             }
         }
         stage('Build') {
-            unity.execute('.')
+            unity.execute(UNITY_PATH, '.')
         }
     }
 }

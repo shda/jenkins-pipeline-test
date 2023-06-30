@@ -1,4 +1,4 @@
-def execute(String unityPath, String projectDir, String methodToExecute, String buildTarget = '', String logFile = '', Boolean noGraphics = true, String additionalParameters = '', Boolean outputLogOnFailure = true) {
+def execute(String unityPath, String projectDir, String methodToExecute = '', String buildTarget = '', String logFile = '', Boolean noGraphics = true, String additionalParameters = '', Boolean outputLogOnFailure = true) {
     ensureUnityExecutableExists(unityPath)
     ensureProjectDirectoryExists(projectDir);
 
@@ -13,7 +13,7 @@ def execute(String unityPath, String projectDir, String methodToExecute, String 
         buildTargetStr = "-buildTarget ${buildTarget}";
     }
 
-    def unityParams = "\"${unityPath}\" -batchmode -projectPath \"${projectDir}\" ${noGraphics ? '-nographics' : ''} ${methodToExecute ? "-executeMethod ${methodToExecute}" : ''} ${buildTarget} ${additionalParameters} -logFile \"${logFile}\" -quit"
+    def unityParams = "\"${unityPath}\" -batchmode -projectPath \"${projectDir}\" ${noGraphics ? '-nographics' : ''} ${methodToExecute ? "-executeMethod ${methodToExecute}" : ''} ${buildTargetStr} ${additionalParameters} -logFile \"${logFile}\" -quit"
     log(unityPath)
     int exitCode
     if (isUnix()) {
