@@ -4,16 +4,11 @@ def exists(String filePath) {
     }
 
     def ret = fileExists filePath
-    return ret.replaceAll("\\s", "").equals("True");
+    return ret
 }
 
 def dirExists(String directory) {
-    if (directory == '') {
-        return false;
-    }
-
-    def ret = powershell(label: 'Check if folder exists', returnStdout: true, script: "Test-Path '${directory}' -PathType Container");
-    return ret.replaceAll("\\s", "").equals("True");
+    return exists(directory)
 }
 
 def nameExists(String path) {

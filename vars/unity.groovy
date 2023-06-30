@@ -120,7 +120,7 @@ private def testPlatformIsValid(String platform) {
 }
 
 private def ensureUnityExecutableExists(String unityPath) {
-    if (!file.dirExists(unityPath)) {
+    if (!file.exists(unityPath)) {
         failStage("Unity executable not found at specified path! (${unityPath})");
     }
 }
