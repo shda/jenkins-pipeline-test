@@ -3,7 +3,7 @@ def exists(String filePath) {
         return false;
     }
 
-    def ret = powershell(label: 'Check if file exists', returnStdout: true, script: "Test-Path '${filePath}' -PathType Leaf");
+    def ret = fileExists filePath
     return ret.replaceAll("\\s", "").equals("True");
 }
 

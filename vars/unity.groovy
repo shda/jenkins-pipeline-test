@@ -13,6 +13,13 @@ def execute(String unityPath, String projectDir, String methodToExecute = '', St
         buildTargetStr = "-buildTarget ${buildTarget}";
     }
 
+    dir('Assets/Editor') {
+        def request = libraryResource 'JenkinsBuilder.cs'
+        writeFile file: 'JenkinsBuilder.cs', text: request
+    }
+
+    methodToExecute = "JenkinsBuilder.Build"
+
     def unityParams = "\"${unityPath}\" -batchmode -projectPath \"${projectDir}\" ${noGraphics ? '-nographics' : ''} ${methodToExecute ? "-executeMethod ${methodToExecute}" : ''} ${buildTargetStr} ${additionalParameters} -logFile \"${logFile}\" -quit"
     log(unityPath)
     int exitCode
@@ -113,8 +120,8 @@ private def testPlatformIsValid(String platform) {
 }
 
 private def ensureUnityExecutableExists(String unityPath) {
-    if (!file.dirExists(unityDirectory)) {
-        failStage("Unity directory not found at specified path! (${unityDirectory})${calledFromInit ? '' : '\nDid you set it using unity.init?'}");
+    if (!file.dirExists(unityPath)) {
+        failStage("Unity executable not found at specified path! (${unityPath})");
     }
 }
 
