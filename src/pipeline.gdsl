@@ -6,7 +6,7 @@ package main
  */
 def gdslScriptContext = context(
         scope: scriptScope(),
-        filetypes: ["gdsl","groovy"]
+        filetypes: ["gdsl", "groovy"]
 )
 
 
@@ -66,7 +66,7 @@ def closures = context(scope: closureScope())
 contributor([closures]) {
     // What things can be inside a pipeline
     if (enclosingCall('pipeline')) {
-        method(name: 'always', type:Object, params:[body: Closure], doc:'Always perform this action after a build' )
+        method(name: 'always', type: Object, params: [body: Closure], doc: 'Always perform this action after a build')
         method(name: 'ansiColor', type: Object, params: [colorMapName: String], doc: 'Color ANSI Console Output')
         method(name: 'echo', type: Object, params: [message: String], doc: 'Print Message')
         method(name: 'stages', type: Object, params: [body: Closure], doc: 'Stages')
@@ -158,8 +158,8 @@ contributor([closures]) {
 
     // The Post section that controls post build activities
     if (enclosingCall("post")) {
-        method(name: 'success', type: Object, params: [body: Closure], doc:'Perform this action after a SUCCESSFUL build' )
-        method(name: 'failure', type: Object, params: [body: Closure], doc:'Perform this action after a FAILED build' )
+        method(name: 'success', type: Object, params: [body: Closure], doc: 'Perform this action after a SUCCESSFUL build')
+        method(name: 'failure', type: Object, params: [body: Closure], doc: 'Perform this action after a FAILED build')
     }
 
     // The options section
@@ -296,7 +296,7 @@ contributor([closures]) {
                     ])
             method(name: 'buildName', type: Object, params: [buildName: String], doc: 'Build name')
             method(name: 'buildDescription', type: Object, params: [buildDescription: String], doc: 'Build description')
-            method(name: 'publishIssues', type: Object, params: [issues:List], doc: 'Publish issues created by a static analysis scan')
+            method(name: 'publishIssues', type: Object, params: [issues: List], doc: 'Publish issues created by a static analysis scan')
             method(name: 'publishIssues', type: Object, namedParams: [parameter(name: 'issues', type: 'java.util.List'), parameter(name: 'failOnError', type: 'boolean')])
             method(name: 'scanForIssues', type: 'Object', params: [:], doc: 'Scan files or the console log for warnings or issues')
             method(name: 'scanForIssues', type: 'Object', namedParams: [parameter(name: 'blameDisabled', type: 'boolean'), parameter(name: 'filters', type: 'java.util.List')])
@@ -332,23 +332,23 @@ def contributorBody = context(scope: closureScope(isArg: true))
 contributor([contributorBody]) {
     if (enclosingCall("contributor")) {
         method name: "method", type: "void", params: [args: [
-                parameter(name:'name', type:String.name, doc:'Method name'),
-                parameter(name:'params', type:Map.name, doc:'A map representing method parameters'),
-                parameter(name:'namedParams', type:Object.name, doc:'''A list representing method named parameters.<br>
+                parameter(name: 'name', type: String.name, doc: 'Method name'),
+                parameter(name: 'params', type: Map.name, doc: 'A map representing method parameters'),
+                parameter(name: 'namedParams', type: Object.name, doc: '''A list representing method named parameters.<br>
 Its elements should be calls to <code>parameter</code> method.'''),
-                parameter(name:'type', type:Object.name, doc:'Return type name of the method'),
-                parameter(name:'doc', type:String.name, doc:'Method documentation text'),
-        ]], doc:'Describe a DSL method'
+                parameter(name: 'type', type: Object.name, doc: 'Return type name of the method'),
+                parameter(name: 'doc', type: String.name, doc: 'Method documentation text'),
+        ]], doc: 'Describe a DSL method'
         method name: "property", type: "void", params: [args: [
-                parameter(name:'name', type:String.name, doc:'Property name'),
-                parameter(name:'type', type:Object.name, doc:'Property type name'),
-                parameter(name:'doc', type:String.name, doc:'Property documentation text'),
-        ]], doc:'Describe a DSL property'
+                parameter(name: 'name', type: String.name, doc: 'Property name'),
+                parameter(name: 'type', type: Object.name, doc: 'Property type name'),
+                parameter(name: 'doc', type: String.name, doc: 'Property documentation text'),
+        ]], doc: 'Describe a DSL property'
         method name: "parameter", type: "Parameter", params: [args: [
-                parameter(name:'name', type:String.name, doc:'Parameter name'),
-                parameter(name:'type', type:Object.name, doc:'Parameter type name'),
-                parameter(name:'doc', type:String.name, doc:'Parameter documentation text'),
-        ]], doc:'Describe a method named parameter'
+                parameter(name: 'name', type: String.name, doc: 'Parameter name'),
+                parameter(name: 'type', type: Object.name, doc: 'Parameter type name'),
+                parameter(name: 'doc', type: String.name, doc: 'Parameter documentation text'),
+        ]], doc: 'Describe a method named parameter'
 
         method name: "add", type: "void", params: [member: "com.intellij.psi.PsiMember"]
         method name: "findClass", type: "com.intellij.psi.PsiClass", params: [name: "java.lang.String"]

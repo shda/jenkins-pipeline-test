@@ -18,7 +18,11 @@ pipeline {
             }
         }
         stage('Build') {
-            unity.execute(UNITY_PATH, '.')
+            steps {
+                script {
+                    unity.execute(UNITY_PATH, '.', buildTarget = "android")
+                }
+            }
         }
     }
 }
