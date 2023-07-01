@@ -46,17 +46,22 @@ def getUnityPath(String editorVersion, String editorVersionRevision = '', boolea
         log.error('unity version required, but not defined')
     }
     def editorVersionPath = getInstalledEditorPath(editorVersion)
-    if (editorVersionPath) return editorVersionPath
+    if (editorVersionPath) {
+        log.info("required version unity ${editorVersion} found at path '${editorVersionPath}'")
+        return editorVersionPath
+    }
     if (!autoInstallEditor) {
         log.error("required version of unity editor not installed: ${editorVersion}")
     }
+    log.info("need install unity ${editorVersion}")
     if (!editorVersionRevision) {
+        log.info("try find latest revision of ${editorVersion}")
         editorVersionRevision = getLatestUnityRevision(editorVersion)
     }
     exec label: 'Install Unity Editor', script: "\"${UnityHubConfiguration.unityHubPath}\" -- --headless install --version ${editorVersion} --changeset ${editorVersionRevision}"
     editorVersionPath = getInstalledEditorPath(editorVersion)
     if (!editorVersionPath) {
-        log.error("required verion on unity should have been installed, but not found over unity hub cli")
+        log.error("required version on unity should have been installed, but not found over unity hub cli")
     }
     return editorVersionPath
 }

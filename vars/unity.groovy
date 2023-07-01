@@ -8,9 +8,9 @@ def init(String unityPath) {
 
 def getExePath(String unityPath) {
     if (unityPath.endsWith(".app")) {
-        return unityHubPath + "/Contents/MacOS/Unity"
+        return unityPath + "/Contents/MacOS/Unity"
     }
-    return unityHubPath
+    return unityPath
 }
 
 def execute(String projectDir, String methodToExecute = '', String buildTarget = '', String logFile = '', Boolean noGraphics = true, String additionalParameters = '', Boolean outputLogOnFailure = true) {
