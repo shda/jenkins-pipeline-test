@@ -1,6 +1,8 @@
 pipeline {
     parameters {
-        choice(name: 'NODE', choices: ['win', 'mac'], description: 'Node')
+        choice name: 'NODE', choices: ['win', 'mac'], description: 'Node'
+        string name: 'UNITY_VERSION', defaultValue: '2021.1.28f1'
+        string name: 'UNITY_VERSION_REVISION', defaultValue: ''
     }
 
     agent {
@@ -19,7 +21,7 @@ pipeline {
             steps {
                 script {
                     unityHub.init(UNITY_HUB_PATH)
-                    def unityPath = unityHub.getUnityPath('2021.1.28f1', 'f3f9dc10f3dd', true)
+                    def unityPath = unityHub.getUnityPath(params.UNITY_VERSION, params.UNITY_VERSION_REVISION, true)
                     unity.init(unityPath)
                     unity.execute('.', 'JenkinsBuilder.Build', 'android')
                 }
