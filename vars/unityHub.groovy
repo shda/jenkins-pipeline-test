@@ -8,7 +8,7 @@ def init(String unityHubPath) {
 }
 
 def getAvailableEditors() {
-    def v = exec label: 'Get available unity editors', returnStdout: true, script: "${UNITY_HUB_PATH} -- --headless editors -i"
+    def v = exec label: 'Get available unity editors', returnStdout: true, script: "\"${UnityHubConfiguration.unityHubPath}\" -- --headless editors -i"
     return v.split('\n')
 }
 
@@ -53,7 +53,7 @@ def getUnityPath(String editorVersion, String editorVersionRevision = '', boolea
     if (!editorVersionRevision) {
         editorVersionRevision = getLatestUnityRevision(editorVersion)
     }
-    exec label: 'Install Unity Editor', script: "${UNITY_HUB_PATH} -- --headless install --version ${editorVersion} --changeset ${editorVersionRevision}"
+    exec label: 'Install Unity Editor', script: "\"${UnityHubConfiguration.unityHubPath}\" -- --headless install --version ${editorVersion} --changeset ${editorVersionRevision}"
     editorVersionPath = getInstalledEditorPath(editorVersion)
     if (!editorVersionPath) {
         log.error("required verion on unity should have been installed, but not found over unity hub cli")
