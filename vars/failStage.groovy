@@ -1,3 +1,3 @@
 def call(String errorMessage = '') {
-    error errorMessage;
+    error errorMessage
 }

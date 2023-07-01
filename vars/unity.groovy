@@ -1,5 +1,20 @@
-def execute(String unityPath, String projectDir, String methodToExecute = '', String buildTarget = '', String logFile = '', Boolean noGraphics = true, String additionalParameters = '', Boolean outputLogOnFailure = true) {
-    ensureUnityExecutableExists(unityPath)
+class UnityConfiguration implements Serializable {
+    static String unityPath = ''
+}
+
+def init(String unityPath) {
+    UnityConfiguration.unityPath = getExePath(unityPath)
+}
+
+def getExePath(String unityPath) {
+    if (unityPath.endsWith(".app")) {
+        return unityHubPath + "/Contents/MacOS/Unity"
+    }
+    return unityHubPath
+}
+
+def execute(String projectDir, String methodToExecute = '', String buildTarget = '', String logFile = '', Boolean noGraphics = true, String additionalParameters = '', Boolean outputLogOnFailure = true) {
+    ensureUnityExecutableExists(UnityConfiguration.unityPath)
     ensureProjectDirectoryExists(projectDir);
 
     projectDir = projectDir.replace('\\', '/');
@@ -20,8 +35,7 @@ def execute(String unityPath, String projectDir, String methodToExecute = '', St
 
     methodToExecute = "JenkinsBuilder.Build"
 
-    def unityParams = "\"${unityPath}\" -batchmode -projectPath \"${projectDir}\" ${noGraphics ? '-nographics' : ''} ${methodToExecute ? "-executeMethod ${methodToExecute}" : ''} ${buildTargetStr} ${additionalParameters} -logFile \"${logFile}\" -quit"
-    log(unityPath)
+    def unityParams = "\"${UnityConfiguration.unityPath}\" -batchmode -projectPath \"${projectDir}\" ${noGraphics ? '-nographics' : ''} ${methodToExecute ? "-executeMethod ${methodToExecute}" : ''} ${buildTargetStr} ${additionalParameters} -logFile \"${logFile}\" -quit"
     int exitCode
     if (isUnix()) {
         exitCode = sh label: 'Execute Unity Method', returnStatus: true, script: unityParams

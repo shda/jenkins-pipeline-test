@@ -1,0 +1,61 @@
+class UnityHubConfiguration implements Serializable {
+    static String unityHubPath = ''
+}
+
+def init(String unityHubPath) {
+    UnityHubConfiguration.unityHubPath = getExePath(unityHubPath)
+}
+
+def getAvailableEditors() {
+    def v = exec label: 'Get available unity editors', returnStdout: true, script: "${UNITY_HUB_PATH} -- --headless editors -i"
+    return v.split('\n')
+}
+
+def getExePath(String unityHubPath) {
+    if (unityHubPath.endsWith(".app")) {
+        return unityHubPath + "/Contents/MacOS/Unity Hub"
+    }
+    return unityHubPath
+}
+
+def getLatestUnityRevision(String editorVersion) {
+    def versionWithoutF = editorVersion[-2] == 'f' ? editorVersion.substring(0, editorVersion.size() - 2) : editorVersion
+    def response = httpRequest "https://unity.com/releases/editor/whats-new/${versionWithoutF}"
+    String content = response.content
+    return (content =~ /<div>Changeset:<\/div>\s+<div>(\w+)</).findAll()[0][1]
+}
+
+def getInstalledEditorPath(String editorVersion) {
+    def availableEditorList = getAvailableEditors()
+    for (final String line in availableEditorList) {
+        if (!line) continue
+
+        final def installedDelimiter = "installed at "
+        def indexOfInstalled = line.indexOf(installedDelimiter)
+        if (indexOfInstalled == -1) continue
+        if (!line.startsWith(editorVersion)) continue
+        return line.substring(indexOfInstalled + installedDelimiter.size())
+    }
+    return ''
+}
+
+
+def getUnityPath(String editorVersion, String editorVersionRevision = '', boolean autoInstallEditor = false) {
+    if (!editorVersion) {
+        error 'unity version required, but not defined'
+    }
+    def editorVersionPath = getInstalledEditorPath(editorVersion)
+    if (editorVersionPath) return editorVersionPath
+    if (!autoInstallEditor) {
+        error "required version of unity editor not installed: ${editorVersion}"
+    }
+    if (!editorVersionRevision) {
+        editorVersionRevision = getLatestUnityRevision(editorVersion)
+    }
+    exec label: 'Install Unity Editor', script: "${UNITY_HUB_PATH} -- --headless install --version ${editorVersion} --changeset ${editorVersionRevision}"
+    editorVersionPath = getInstalledEditorPath(editorVersion)
+    if (!editorVersionPath) {
+        error "required verion on unity should have been installed, but not found over unity hub cli"
+    }
+    return editorVersionPath
+}

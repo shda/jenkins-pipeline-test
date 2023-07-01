@@ -18,7 +18,10 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    unity.execute(env.UNITY_PATH, '.', 'JenkinsBuilder.Build', 'android')
+                    uniytHub.init(UNITY_HUB_PATH)
+                    def unityPath = uniytHub.getUnityPath('2021.1.28f1', 'f3f9dc10f3dd', true)
+                    unity.init(unityPath)
+                    unity.execute('.', 'JenkinsBuilder.Build', 'android')
                 }
             }
         }
