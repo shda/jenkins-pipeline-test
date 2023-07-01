@@ -3,14 +3,6 @@ pipeline {
         choice name: 'NODE', choices: ['win', 'mac'], description: 'Node'
         string name: 'UNITY_VERSION', defaultValue: '2021.1.28f1'
         string name: 'UNITY_VERSION_REVISION', defaultValue: ''
-        extendedChoice name: 'REQUIRED_MODULES',
-                description: 'Required Modules',
-                groovyScript: 'return unityHub.getAvailableModulesForChoice()',
-                multiSelectDelimiter: ',',
-                quoteValue: true,
-                saveJSONParameterToFile: false,
-                type: 'PT_CHECKBOX',
-                visibleItemCount: 10
     }
 
     agent {
