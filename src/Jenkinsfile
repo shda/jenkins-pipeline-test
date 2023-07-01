@@ -5,11 +5,11 @@ pipeline {
         string name: 'UNITY_VERSION_REVISION', defaultValue: ''
         extendedChoice name: 'REQUIRED_MODULES',
                 description: 'Required Modules',
+                groovyScript: 'return unityHub.getAvailableModulesForChoice()',
                 multiSelectDelimiter: ',',
                 quoteValue: true,
                 saveJSONParameterToFile: false,
                 type: 'PT_CHECKBOX',
-                value: unityHub.getAvailableModulesForChoice(),
                 visibleItemCount: 10
     }
 
