@@ -18,6 +18,37 @@ pipeline {
     }
 
     stages {
+        stage('Setup parameters') {
+            steps {
+                script {
+                    properties([
+                            parameters([
+                                    choice(
+                                            choices: ['ONE', 'TWO'],
+                                            name: 'PARAMETER_01'
+                                    ),
+                                    booleanParam(
+                                            defaultValue: true,
+                                            description: '',
+                                            name: 'BOOLEAN'
+                                    ),
+                                    text(
+                                            defaultValue: '''
+                                this is a multi-line 
+                                string parameter example
+                                ''',
+                                            name: 'MULTI-LINE-STRING'
+                                    ),
+                                    string(
+                                            defaultValue: 'scriptcrunch',
+                                            name: 'STRING-PARAMETER',
+                                            trim: true
+                                    )
+                            ])
+                    ])
+                }
+            }
+        }
         stage('Checkout') {
             steps {
                 git branch: 'dev',
@@ -30,10 +61,10 @@ pipeline {
                 script {
                     echo params.REQUIRED_MODULES
                     echo params.REQUIRED_MODULES.class
-                    unityHub.init(UNITY_HUB_PATH)
-                    def unityPath = unityHub.getUnityPath(params.UNITY_VERSION, params.UNITY_VERSION_REVISION, true)
-                    unity.init(unityPath)
-                    unity.execute('.', 'JenkinsBuilder.Build', 'android')
+//                    unityHub.init(UNITY_HUB_PATH)
+//                    def unityPath = unityHub.getUnityPath(params.UNITY_VERSION, params.UNITY_VERSION_REVISION, true)
+//                    unity.init(unityPath)
+//                    unity.execute('.', 'JenkinsBuilder.Build', 'android')
                 }
             }
         }
