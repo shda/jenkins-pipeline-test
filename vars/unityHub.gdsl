@@ -3,6 +3,7 @@ class UnityHubConfiguration implements Serializable {
 }
 
 def init(String unityHubPath) {
+    ensureUnityHubExecutableExists(unityHubPath)
     UnityHubConfiguration.unityHubPath = getExePath(unityHubPath)
 }
 
@@ -42,12 +43,12 @@ def getInstalledEditorPath(String editorVersion) {
 
 def getUnityPath(String editorVersion, String editorVersionRevision = '', boolean autoInstallEditor = false) {
     if (!editorVersion) {
-        error 'unity version required, but not defined'
+        log.error('unity version required, but not defined')
     }
     def editorVersionPath = getInstalledEditorPath(editorVersion)
     if (editorVersionPath) return editorVersionPath
     if (!autoInstallEditor) {
-        error "required version of unity editor not installed: ${editorVersion}"
+        log.error("required version of unity editor not installed: ${editorVersion}")
     }
     if (!editorVersionRevision) {
         editorVersionRevision = getLatestUnityRevision(editorVersion)
@@ -55,7 +56,13 @@ def getUnityPath(String editorVersion, String editorVersionRevision = '', boolea
     exec label: 'Install Unity Editor', script: "${UNITY_HUB_PATH} -- --headless install --version ${editorVersion} --changeset ${editorVersionRevision}"
     editorVersionPath = getInstalledEditorPath(editorVersion)
     if (!editorVersionPath) {
-        error "required verion on unity should have been installed, but not found over unity hub cli"
+        log.error("required verion on unity should have been installed, but not found over unity hub cli")
     }
     return editorVersionPath
+}
+
+private def ensureUnityHubExecutableExists(String unityHubPath) {
+    if (!file.exists(unityHubPath)) {
+        failStage("Unity Hub executable not found at specified path! (${unityHubPath})");
+    }
 }
