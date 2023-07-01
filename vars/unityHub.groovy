@@ -23,28 +23,13 @@ availableModules = [
         'Vuforia Augmented Reality Support'       : 'vuforia-ar',
 ]
 
-def getAvailableModulesForChoice() {
-    return availableModules.keySet().collect { "\"${it}\"" }.join(",")
+def setupJobParameters() {
+    def params = []
+    for (final def keyValue in availableModules) {
+        params.add(booleanParam(name: '', defaultValue: false, description: keyValue.key))
+    }
+    properties([parameters(params)])
 }
-
-//Android Build Support: android
-//Android SDK & NDK Tools: android-sdk-ndk-tools
-//OpenJDK: android-open-jdk
-//iOS Build Support: ios
-//tvOS Build Support: appletv
-//Linux Build Support: linux
-//Linux Build Support (Mono): linux-mono
-//Linux Build Support (IL2CPP): linux-il2cpp
-//Mac Build Support (Mono): mac-mono
-//Windows Build Support (IL2CPP): windows-il2cpp
-//Universal Windows Platform Build Support: universal-windows-platform
-//UWP Build Support (IL2CPP): uwp-il2cpp
-//UWP Build Support (.NET): uwp-.net
-//WebGL Build Support: webgl
-//Lumin OS (Magic Leap) Build Support: lumin
-//Facebook Gameroom: facebookgameroom
-//Facebook Gameroom Build Support: facebook-games
-//Vuforia Augmented Reality Support: vuforia-ar
 
 def init(String unityHubPath) {
     ensureUnityHubExecutableExists(unityHubPath)

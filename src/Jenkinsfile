@@ -1,6 +1,7 @@
 pipeline {
     parameters {
         choice name: 'NODE', choices: ['win', 'mac'], description: 'Node'
+        booleanParam name: 'AUTO_DETECT_UNITY_VERSION', defaultValue: false
         string name: 'UNITY_VERSION', defaultValue: '2021.1.28f1'
         string name: 'UNITY_VERSION_REVISION', defaultValue: ''
     }
@@ -10,37 +11,13 @@ pipeline {
     }
 
     stages {
-        stage('Setup parameters') {
-            steps {
-                script {
-                    properties([
-                            parameters([
-                                    choice(
-                                            choices: ['ONE', 'TWO'],
-                                            name: 'PARAMETER_01'
-                                    ),
-                                    booleanParam(
-                                            defaultValue: true,
-                                            description: '',
-                                            name: 'BOOLEAN'
-                                    ),
-                                    text(
-                                            defaultValue: '''
-                                this is a multi-line 
-                                string parameter example
-                                ''',
-                                            name: 'MULTI-LINE-STRING'
-                                    ),
-                                    string(
-                                            defaultValue: 'scriptcrunch',
-                                            name: 'STRING-PARAMETER',
-                                            trim: true
-                                    )
-                            ])
-                    ])
-                }
-            }
-        }
+//        stage('Setup parameters') {
+//            steps {
+//                script {
+//                    unityHub.setupJobParameters()
+//                }
+//            }
+//        }
         stage('Checkout') {
             steps {
                 git branch: 'dev',
@@ -51,12 +28,16 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    echo params.REQUIRED_MODULES
-                    echo params.REQUIRED_MODULES.class
-//                    unityHub.init(UNITY_HUB_PATH)
-//                    def unityPath = unityHub.getUnityPath(params.UNITY_VERSION, params.UNITY_VERSION_REVISION, true)
-//                    unity.init(unityPath)
-//                    unity.execute('.', 'JenkinsBuilder.Build', 'android')
+                    def autoDetectUnityVersion = params.AUTO_DETECT_UNITY_VERSION
+                    def (projUnityVersion, projUnityRevision) = unityUtils.getProjectUnityVersionAndRevision('.')
+                    unityHub.init(UNITY_HUB_PATH)
+                    def unityVersion = autoDetectUnityVersion && projUnityVersion ? projUnityVersion : param.UNITY_VERSION
+                    def unityRevision = autoDetectUnityVersion && projUnityRevision ? projUnityRevision : param.UNITY_VERSION_REVISION
+                    log.info("required unityVersion: ${unityVersion}")
+                    log.info("required unityRevision: ${unityRevision}")
+                    def unityPath = unityHub.getUnityPath(unityVersion, unityRevision, false)
+                    unity.init(unityPath)
+                    unity.execute('.', 'JenkinsBuilder.Build', 'android')
                 }
             }
         }
