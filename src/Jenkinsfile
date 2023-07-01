@@ -3,6 +3,14 @@ pipeline {
         choice name: 'NODE', choices: ['win', 'mac'], description: 'Node'
         string name: 'UNITY_VERSION', defaultValue: '2021.1.28f1'
         string name: 'UNITY_VERSION_REVISION', defaultValue: ''
+        extendedChoice name: 'REQUIRED_MODULES',
+                description: 'Required Modules',
+                multiSelectDelimiter: ',',
+                quoteValue: true,
+                saveJSONParameterToFile: false,
+                type: 'PT_CHECKBOX',
+                value: unityHub.getAvailableModulesForChoice(),
+                visibleItemCount: 10
     }
 
     agent {
@@ -20,6 +28,8 @@ pipeline {
         stage('Build') {
             steps {
                 script {
+                    echo params.REQUIRED_MODULES
+                    echo params.REQUIRED_MODULES.class
                     unityHub.init(UNITY_HUB_PATH)
                     def unityPath = unityHub.getUnityPath(params.UNITY_VERSION, params.UNITY_VERSION_REVISION, true)
                     unity.init(unityPath)
