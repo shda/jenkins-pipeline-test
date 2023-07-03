@@ -1,7 +1,7 @@
 pipeline {
     parameters {
         choice name: 'NODE', choices: ['win', 'mac'], description: 'Node'
-        booleanParam name: 'AUTO_DETECT_UNITY_VERSION', defaultValue: false
+        booleanParam name: 'AUTO_DETECT_UNITY_VERSION', defaultValue: true
         string name: 'UNITY_VERSION', defaultValue: '2021.1.28f1'
         string name: 'UNITY_VERSION_REVISION', defaultValue: ''
     }

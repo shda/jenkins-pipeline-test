@@ -103,7 +103,7 @@ private def buildTargetIsValid(String target) {
     }
 
     def possibleTargets = ['Standalone', 'Win', 'Win64', 'OSXUniversal', 'Linux64', 'iOS', 'Android', 'WebGL', 'XboxOne', 'PS4', 'WindowsStoreApps', 'Switch', 'tvOS'];
-    target = target.toLowerCase();
+    target = target.toLowerCase()
 
     for (possibleTarget in possibleTargets) {
         if (target == possibleTarget.toLowerCase()) {

@@ -1,9 +1,230 @@
-using UnityEngine;
+using System;
+using System.IO;
+using System.Reflection;
+using UnityEditor;
 
 public static class JenkinsBuilder
 {
+    public const string BuildOptionsJsonFilePath = ".build_options.json";
+
     public static void Build()
     {
-        Debug.Log("Any work");
+        var options = new CIBuildOptions();
+        ReadBuildOptionsFromFile(options);
+        Build(options);
+    }
+
+    public static void ReadBuildOptionsFromFile(CIBuildOptions args)
+    {
+        var explicitDefined = false;
+        if (TryGetCommandLineArgValue("ciOptionsFile", out var ciBuildOptionsJsonFilePath))
+        {
+            explicitDefined = true;
+        }
+        else
+        {
+            ciBuildOptionsJsonFilePath = BuildOptionsJsonFilePath;
+        }
+
+        if (!File.Exists(BuildOptionsJsonFilePath))
+        {
+            if (explicitDefined) throw new FileNotFoundException(ciBuildOptionsJsonFilePath);
+            return;
+        }
+
+        var json = File.ReadAllText(BuildOptionsJsonFilePath);
+        EditorJsonUtility.FromJsonOverwrite(json, args);
+    }
+
+    private static bool TryGetCommandLineArgValue(string argName, out string value)
+    {
+        var commandLineArgs = Environment.GetCommandLineArgs();
+        var found = false;
+        foreach (var commandLineArg in commandLineArgs)
+        {
+            if (commandLineArg.StartsWith("-"))
+            {
+                if (commandLineArg.TrimStart('-') == argName)
+                {
+                    found = true;
+                }
+            }
+            else if (found)
+            {
+                value = commandLineArg;
+                return true;
+            }
+        }
+
+        value = default;
+        return false;
+    }
+
+    public static void Build(CIBuildOptions options)
+    {
+        EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Standalone, BuildTarget.StandaloneWindows64);
+        BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
+        SetupCommonOptions(options, ref buildPlayerOptions);
+        EditorUserBuildSettings.SwitchActiveBuildTarget(buildPlayerOptions.targetGroup, buildPlayerOptions.target);
+
+        SetupAndroidOptions(options.android, ref buildPlayerOptions);
+        SetupWebGlOptions(options.webgl, ref buildPlayerOptions);
+
+        TryRunMethod(options.preBuildMethod);
+        BuildPipeline.BuildPlayer(buildPlayerOptions);
+        TryRunMethod(options.postBuildMethod);
+    }
+
+    public static void TryRunMethod(string fullMethodName)
+    {
+        if (string.IsNullOrEmpty(fullMethodName)) return;
+        var lastPointIndex = fullMethodName.LastIndexOf(".");
+        var typeName = "Editor." + fullMethodName.Substring(0, lastPointIndex);
+        var methodName = fullMethodName.Substring(lastPointIndex + 1);
+        var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+        foreach (var assembly in assemblies)
+        {
+            var type = assembly.GetType(typeName);
+            if (type == null) continue;
+            var method = type.GetMethod(methodName, BindingFlags.Public | BindingFlags.Static);
+            if (method == null) continue;
+            method.Invoke(null, null);
+            return;
+        }
+
+        throw new MissingMethodException(fullMethodName);
+    }
+
+    private static void SetupWebGlOptions(CIBuildOptions.WebGLOptions options,
+        ref BuildPlayerOptions buildPlayerOptions)
+    {
+        if (options.template != null)
+        {
+            PlayerSettings.WebGL.template = options.template;
+        }
+    }
+
+    private static void SetupAndroidOptions(CIBuildOptions.AndroidOptions options,
+        ref BuildPlayerOptions buildPlayerOptions)
+    {
+        if (options.keystoreName != null)
+        {
+            PlayerSettings.Android.keystoreName = options.keystoreName;
+        }
+
+        if (options.keystorePass != null)
+        {
+            PlayerSettings.Android.keystorePass = options.keystorePass;
+        }
+
+        if (options.keyaliasName != null)
+        {
+            PlayerSettings.Android.keyaliasName = options.keyaliasName;
+        }
+
+        if (options.keyaliasPass != null)
+        {
+            PlayerSettings.Android.keyaliasPass = options.keyaliasPass;
+        }
+
+        if (options.buildAppBundle != null)
+        {
+            EditorUserBuildSettings.buildAppBundle = options.buildAppBundle.Value;
+        }
+    }
+
+    private static void SetupCommonOptions(CIBuildOptions options, ref BuildPlayerOptions buildPlayerOptions)
+    {
+        if (options.buildTarget != null)
+        {
+            buildPlayerOptions.target = ParseEnum<BuildTarget>(options.buildTarget);
+            buildPlayerOptions.targetGroup = GetTargetGroupFromTarget(buildPlayerOptions.target);
+        }
+
+#if UNITY_2021_2_OR_NEWER
+        if (options.buildSubTarget != null)
+        {
+            buildPlayerOptions.subtarget = ParseEnum<StandaloneBuildSubtarget>(options.buildSubTargets);
+        }
+#endif
+
+        if (options.scenes != null)
+        {
+            buildPlayerOptions.scenes = options.scenes;
+        }
+
+        if (options.extraScriptingDefines != null)
+        {
+            buildPlayerOptions.extraScriptingDefines = options.extraScriptingDefines;
+        }
+
+        if (options.locationPathName != null)
+        {
+            buildPlayerOptions.locationPathName = options.locationPathName;
+        }
+
+        if (options.enableHeadlessMode != null)
+        {
+            EditorUserBuildSettings.enableHeadlessMode = options.enableHeadlessMode.Value;
+        }
+    }
+
+    private static BuildTargetGroup GetTargetGroupFromTarget(BuildTarget target)
+    {
+        return target switch
+        {
+            BuildTarget.StandaloneOSX => BuildTargetGroup.Standalone,
+            BuildTarget.StandaloneOSXIntel => BuildTargetGroup.Standalone,
+            BuildTarget.StandaloneWindows => BuildTargetGroup.Standalone,
+            BuildTarget.StandaloneLinux => BuildTargetGroup.Standalone,
+            BuildTarget.StandaloneWindows64 => BuildTargetGroup.Standalone,
+            BuildTarget.StandaloneLinux64 => BuildTargetGroup.Standalone,
+            BuildTarget.StandaloneLinuxUniversal => BuildTargetGroup.Standalone,
+            BuildTarget.StandaloneOSXIntel64 => BuildTargetGroup.Standalone,
+            BuildTarget.XboxOne => BuildTargetGroup.XboxOne,
+            BuildTarget.iOS => BuildTargetGroup.iOS,
+            BuildTarget.Android => BuildTargetGroup.Android,
+            BuildTarget.WebGL => BuildTargetGroup.WebGL,
+            _ => throw new ArgumentOutOfRangeException(nameof(target), target, null)
+        };
+    }
+
+    private static TEnum ParseEnum<TEnum>(string value) where TEnum : struct
+    {
+        if (Enum.TryParse<TEnum>(value, true, out var enumValue)) return enumValue;
+        throw new ArgumentException($"{typeof(TEnum).Name} not identified: {value}");
+    }
+
+    [Serializable]
+    public struct CIBuildOptions
+    {
+        public string buildTarget;
+#if UNITY_2021_2_OR_NEWER
+        public string buildSubTarget;
+#endif
+        public string[] scenes;
+        public string[] extraScriptingDefines;
+        public string locationPathName;
+        public bool? enableHeadlessMode;
+        public string preBuildMethod;
+        public string postBuildMethod;
+        public AndroidOptions android;
+        public WebGLOptions webgl;
+
+        [Serializable]
+        public struct AndroidOptions
+        {
+            public string keystoreName;
+            public string keystorePass;
+            public string keyaliasName;
+            public string keyaliasPass;
+            public bool? buildAppBundle;
+        }
+
+        [Serializable]
+        public struct WebGLOptions
+        {
+            public string template;
+        }
     }
 }
