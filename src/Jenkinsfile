@@ -60,7 +60,10 @@ pipeline {
                         buildOptions['postBuildMethod'] = param.POST_BUILD_METHOD
                     }
 
+                    buildTarget = 'StandaloneWindows64'
                     buildOptions['locationPathName'] = '.Build/Win/game.exe'
+
+                    buildOptions['buildTarget'] = buildTarget
 
                     def json = JsonOutput.toJson(buildOptions)
                     writeFile file: '.build_options.json', text: json
@@ -68,7 +71,7 @@ pipeline {
 
 
                     unity.init(unityPath)
-                    unity.execute(projectDir: '.', methodToExecute: 'JenkinsBuilder.Build', buildTarget: 'android', additionalParameters: additionalParameters)
+                    unity.execute(projectDir: '.', methodToExecute: 'JenkinsBuilder.Build', buildTarget: buildTarget, additionalParameters: additionalParameters)
                 }
             }
         }

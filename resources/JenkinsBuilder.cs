@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using UnityEditor;
+using UnityEngine;
 
 public static class JenkinsBuilder
 {
@@ -196,7 +197,7 @@ public static class JenkinsBuilder
     }
 
     [Serializable]
-    public struct CIBuildOptions
+    public class CIBuildOptions
     {
         public string buildTarget;
 #if UNITY_2021_2_OR_NEWER
@@ -212,7 +213,7 @@ public static class JenkinsBuilder
         public WebGLOptions webgl;
 
         [Serializable]
-        public struct AndroidOptions
+        public class AndroidOptions
         {
             public string keystoreName;
             public string keystorePass;
@@ -222,7 +223,7 @@ public static class JenkinsBuilder
         }
 
         [Serializable]
-        public struct WebGLOptions
+        public class WebGLOptions
         {
             public string template;
         }
