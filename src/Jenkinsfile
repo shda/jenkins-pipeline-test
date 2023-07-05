@@ -63,7 +63,7 @@ pipeline {
 
                     buildOptions['buildTarget'] = buildTarget
 
-                    writeJSON file: '.build_options.json', json: json
+                    writeJSON file: '.build_options.json', json: buildOptions
                     def additionalParameters = '-ciOptionsFile .build_potions.json'
 
 
