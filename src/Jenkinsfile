@@ -82,7 +82,7 @@ pipeline {
                     echo BUILD_TAG
                     echo "zip zipFile: \"${BUILD_TAG}.zip\", dir: '.Build/Win'"
                     def buildArchivePath = "${BUILD_TAG}.zip"
-                    zip zipFile: buildArchivePath, dir: '.Build/Win'
+                    zip zipFile: buildArchivePath, dir: '.Build/Win', overwrite: true, archive: true
                     env.BUILD_ARCHIVE_PATH = buildArchivePath
                 }
                 archiveArtifacts artifacts: env.BUILD_ARCHIVE_PATH

@@ -32,7 +32,7 @@ def execute(def args) {
     }
 
     def buildTargetStr = '';
-    if (buildTarget && buildTargetIsValid(buildTarget)) {
+    if (buildTarget) {
         buildTargetStr = "-buildTarget ${buildTarget}";
     }
 
@@ -101,24 +101,6 @@ def runTests(String projectDir, String testPlatform = '', List<String> testFilte
     if (exitCode != 0) {
         unstable 'Some tests did not pass!'
     }
-}
-
-private def buildTargetIsValid(String target) {
-    if (!target) {
-        return false;
-    }
-
-    def possibleTargets = ['Standalone', 'Win', 'Win64', 'OSXUniversal', 'Linux64', 'iOS', 'Android', 'WebGL', 'XboxOne', 'PS4', 'WindowsStoreApps', 'Switch', 'tvOS'];
-    target = target.toLowerCase()
-
-    for (possibleTarget in possibleTargets) {
-        if (target == possibleTarget.toLowerCase()) {
-            return true;
-        }
-    }
-
-    log.error("Invalid build target '${target}' specified. Valid targets: ${possibleTargets.join(', ')}.")
-    return false;
 }
 
 private def testPlatformIsValid(String platform) {
