@@ -74,7 +74,9 @@ pipeline {
         }
         stage('Zip') {
             steps {
-                zip zipFile: "${BUILD_TAG}.zip", dir: '.Build/Win'
+                script {
+                    zip zipFile: "${BUILD_TAG}.zip", dir: '.Build/Win'
+                }
             }
         }
     }
