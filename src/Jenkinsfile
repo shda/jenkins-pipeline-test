@@ -1,9 +1,17 @@
+import groovy.json.JsonOutput
+
 pipeline {
     parameters {
         choice name: 'NODE', choices: ['win', 'mac'], description: 'Node'
         booleanParam name: 'AUTO_DETECT_UNITY_VERSION', defaultValue: true
         string name: 'UNITY_VERSION', defaultValue: '2021.1.28f1'
         string name: 'UNITY_VERSION_REVISION', defaultValue: ''
+
+        text name: 'BUILD_SCENES', defaultValue: ''
+        text name: 'EXTRA_SCRIPTING_DEFINES', defaultValue: ''
+        string name: 'PRE_BUILD_METHOD', defaultValue: ''
+        string name: 'POST_BUILD_METHOD', defaultValue: ''
+
     }
 
     agent {
@@ -36,9 +44,37 @@ pipeline {
                     log.info("required unityVersion: ${unityVersion}")
                     log.info("required unityRevision: ${unityRevision}")
                     def unityPath = unityHub.getUnityPath(unityVersion, unityRevision, false)
+
+                    buildOptions = new HashMap<String, Object>()
+
+                    if (buildOptions) {
+                        buildOptions['scenes'] = param.BUILD_SCENES
+                    }
+                    if (buildOptions) {
+                        buildOptions['extraScriptingDefines'] = param.EXTRA_SCRIPTING_DEFINES
+                    }
+                    if (buildOptions) {
+                        buildOptions['preBuildMethod'] = param.PRE_BUILD_METHOD
+                    }
+                    if (buildOptions) {
+                        buildOptions['postBuildMethod'] = param.POST_BUILD_METHOD
+                    }
+
+                    buildOptions['locationPathName'] = '.Build/Win/game.exe'
+
+                    def json = JsonOutput.toJson(buildOptions)
+                    writeFile file: '.build_options.json', text: json
+                    def additionalParameters = '-ciOptionsFile .build_potions.json'
+
+
                     unity.init(unityPath)
-                    unity.execute('.', 'JenkinsBuilder.Build', 'android')
+                    unity.execute(projectDir: '.', methodToExecute: 'JenkinsBuilder.Build', buildTarget: 'android', additionalParameters: additionalParameters)
                 }
+            }
+        }
+        stage('Zip') {
+            steps {
+                zip zipFile: "${BUILD_TAG}.zip", dir: '.Build/Win'
             }
         }
     }

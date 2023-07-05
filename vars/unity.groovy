@@ -13,7 +13,15 @@ def getExePath(String unityPath) {
     return unityPath
 }
 
-def execute(String projectDir, String methodToExecute = '', String buildTarget = '', String logFile = '', Boolean noGraphics = true, String additionalParameters = '', Boolean outputLogOnFailure = true) {
+def execute(def args) {
+    String projectDir = args.projectDir
+    String methodToExecute = args.methodToExecute ?: ''
+    String buildTarget = args.buildTarget
+    String logFile = args.logFile ?: ''
+    Boolean noGraphics = args.noGraphics ?: true
+    String additionalParameters = args.additionalParameters ?: ''
+    Boolean outputLogOnFailure = args.outputLogOnFailure ?: true
+
     ensureUnityExecutableExists(UnityConfiguration.unityPath)
     ensureProjectDirectoryExists(projectDir);
 
@@ -32,8 +40,6 @@ def execute(String projectDir, String methodToExecute = '', String buildTarget =
         def request = libraryResource 'JenkinsBuilder.cs'
         writeFile file: 'JenkinsBuilder.cs', text: request
     }
-
-    methodToExecute = "JenkinsBuilder.Build"
 
     def unityParams = "\"${UnityConfiguration.unityPath}\" -batchmode -projectPath \"${projectDir}\" ${noGraphics ? '-nographics' : ''} ${methodToExecute ? "-executeMethod ${methodToExecute}" : ''} ${buildTargetStr} ${additionalParameters} -logFile \"${logFile}\" -quit"
     int exitCode
