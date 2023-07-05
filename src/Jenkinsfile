@@ -1,6 +1,6 @@
 pipeline {
     parameters {
-        choice name: 'NODE', choices: ['win', 'mac'], description: 'Node'
+        choice name: 'NODE', choices: ['unity', 'win', 'mac'], description: 'Node'
         booleanParam name: 'AUTO_DETECT_UNITY_VERSION', defaultValue: true
         string name: 'UNITY_VERSION', defaultValue: '2021.1.28f1'
         string name: 'UNITY_VERSION_REVISION', defaultValue: ''
@@ -64,7 +64,7 @@ pipeline {
                     buildOptions['buildTarget'] = buildTarget
 
                     writeJSON file: '.build_options.json', json: buildOptions
-                    def additionalParameters = '-ciOptionsFile .build_potions.json'
+                    def additionalParameters = '-ciOptionsFile .build_options.json'
 
 
                     unity.init(unityPath)
@@ -75,9 +75,6 @@ pipeline {
         stage('Zip') {
             steps {
                 script {
-                    echo BUILD_NUMBER
-                    echo BUILD_TAG
-                    echo "zip zipFile: \"${BUILD_TAG}.zip\", dir: '.Build/Win'"
                     def buildArchivePath = "${BUILD_TAG}.zip"
                     zip zipFile: buildArchivePath, dir: '.Build/Win', overwrite: true, archive: true
                 }
