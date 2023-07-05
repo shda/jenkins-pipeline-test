@@ -1,5 +1,3 @@
-import groovy.json.JsonOutput
-
 pipeline {
     parameters {
         choice name: 'NODE', choices: ['win', 'mac'], description: 'Node'
@@ -65,8 +63,7 @@ pipeline {
 
                     buildOptions['buildTarget'] = buildTarget
 
-                    def json = JsonOutput.toJson(buildOptions)
-                    writeFile file: '.build_options.json', text: json
+                    writeJson file: '.build_options.json', json: json
                     def additionalParameters = '-ciOptionsFile .build_potions.json'
 
 
@@ -83,9 +80,7 @@ pipeline {
                     echo "zip zipFile: \"${BUILD_TAG}.zip\", dir: '.Build/Win'"
                     def buildArchivePath = "${BUILD_TAG}.zip"
                     zip zipFile: buildArchivePath, dir: '.Build/Win', overwrite: true, archive: true
-                    env.BUILD_ARCHIVE_PATH = buildArchivePath
                 }
-                archiveArtifacts artifacts: env.BUILD_ARCHIVE_PATH
             }
         }
     }
