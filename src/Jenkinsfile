@@ -60,7 +60,7 @@ pipeline {
                         buildOptions['postBuildMethod'] = param.POST_BUILD_METHOD
                     }
 
-                    buildTarget = 'StandaloneWindows64'
+                    def buildTarget = 'StandaloneWindows64'
                     buildOptions['locationPathName'] = '.Build/Win/game.exe'
 
                     buildOptions['buildTarget'] = buildTarget
