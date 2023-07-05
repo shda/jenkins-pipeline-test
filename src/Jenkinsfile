@@ -78,6 +78,9 @@ pipeline {
         stage('Zip') {
             steps {
                 script {
+                    echo BUILD_NUMBER
+                    echo BUILD_TAG
+                    echo "zip zipFile: \"${BUILD_TAG}.zip\", dir: '.Build/Win'"
                     zip zipFile: "${BUILD_TAG}.zip", dir: '.Build/Win'
                 }
             }
