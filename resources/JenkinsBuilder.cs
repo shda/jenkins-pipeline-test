@@ -99,6 +99,7 @@ public static class JenkinsBuilder
     private static void SetupWebGlOptions(CIBuildOptions.WebGLOptions options,
         ref BuildPlayerOptions buildPlayerOptions)
     {
+        if (options == null) return;
         if (options.template != null)
         {
             PlayerSettings.WebGL.template = options.template;
@@ -108,6 +109,7 @@ public static class JenkinsBuilder
     private static void SetupAndroidOptions(CIBuildOptions.AndroidOptions options,
         ref BuildPlayerOptions buildPlayerOptions)
     {
+        if (options == null) return;
         if (options.keystoreName != null)
         {
             PlayerSettings.Android.keystoreName = options.keystoreName;
