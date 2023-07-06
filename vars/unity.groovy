@@ -13,14 +13,23 @@ def getExePath(String unityPath) {
     return unityPath
 }
 
-def execute(def args) {
-    String projectDir = args.projectDir
-    String methodToExecute = args.methodToExecute ?: ''
-    String buildTarget = args.buildTarget
-    String logFile = args.logFile ?: ''
-    Boolean noGraphics = args.noGraphics ?: true
-    String additionalParameters = args.additionalParameters ?: ''
-    Boolean outputLogOnFailure = args.outputLogOnFailure ?: true
+def execute(
+        def args,
+        String projectDir = '',
+        String methodToExecute = null,
+        String buildTarget = null,
+        String logFile = null,
+        Boolean noGraphics = true,
+        String additionalParameters = null,
+        Boolean outputLogOnFailure = true
+) {
+    projectDir = args.projectDir ?: projectDir
+    methodToExecute = args.methodToExecute ?: methodToExecute
+    buildTarget = args.buildTarget ?: buildTarget
+    logFile = args.logFile ?: logFile
+    noGraphics = args.noGraphics ?: noGraphics
+    additionalParameters = args.additionalParameters ?: additionalParameters
+    outputLogOnFailure = args.outputLogOnFailure ?: outputLogOnFailure
 
     ensureUnityExecutableExists(UnityConfiguration.unityPath)
     ensureProjectDirectoryExists(projectDir);
