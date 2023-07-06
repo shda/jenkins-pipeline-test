@@ -62,9 +62,9 @@ def build(def args,
     dir('Assets/Editor') {
         writeFile file: 'JenkinsBuilder.cs', text: libraryResource('JenkinsBuilder.cs')
     }
-    writeJSON file: '.build_options.json', json: buildOptions
+    writeJSON file: 'ci_build_options.json', json: buildOptions
 
-    additionalParameters += ' -ciOptionsFile .build_options.json'
+    additionalParameters += ' -ciOptionsFile ci_build_options.json'
     unity.execute(projectDir: projectDir, methodToExecute: 'JenkinsBuilder.Build', buildTarget: buildTarget, additionalParameters: additionalParameters)
 }
 
