@@ -14,6 +14,7 @@ def build(def args,
           String locationPathName = null
 ) {
     autoDetectUnityVersion = args.autoDetectUnityVersion ?: autoDetectUnityVersion
+    unityHubPath = args.unityHubPath ?: unityHubPath
     projectDir = args.projectDir ?: projectDir
     scenes = args.scenes ?: scenes
     buildTarget = args.buildTarget ?: buildTarget
