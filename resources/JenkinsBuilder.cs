@@ -129,10 +129,7 @@ public static class JenkinsBuilder
             PlayerSettings.Android.keyaliasPass = options.keyaliasPass;
         }
 
-        if (options.buildAppBundle != null)
-        {
-            EditorUserBuildSettings.buildAppBundle = options.buildAppBundle.Value;
-        }
+        EditorUserBuildSettings.buildAppBundle = options.buildAppBundle;
     }
 
     private static void SetupCommonOptions(CIBuildOptions options, ref BuildPlayerOptions buildPlayerOptions)
@@ -165,10 +162,7 @@ public static class JenkinsBuilder
             buildPlayerOptions.locationPathName = options.locationPathName;
         }
 
-        if (options.enableHeadlessMode != null)
-        {
-            EditorUserBuildSettings.enableHeadlessMode = options.enableHeadlessMode.Value;
-        }
+        EditorUserBuildSettings.enableHeadlessMode = options.enableHeadlessMode;
     }
 
     private static BuildTargetGroup GetTargetGroupFromTarget(BuildTarget target)
@@ -203,7 +197,7 @@ public static class JenkinsBuilder
         public string[] scenes;
         public string[] extraScriptingDefines;
         public string locationPathName;
-        public bool? enableHeadlessMode;
+        public bool enableHeadlessMode;
         public string preBuildMethod;
         public string postBuildMethod;
         public AndroidOptions android;
@@ -216,7 +210,7 @@ public static class JenkinsBuilder
             public string keystorePass;
             public string keyaliasName;
             public string keyaliasPass;
-            public bool? buildAppBundle;
+            public bool buildAppBundle;
         }
 
         [Serializable]
