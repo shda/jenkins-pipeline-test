@@ -2,11 +2,10 @@ using System;
 using System.IO;
 using System.Reflection;
 using UnityEditor;
-using UnityEngine;
 
 public static class JenkinsBuilder
 {
-    public const string BuildOptionsJsonFilePath = ".build_options.json";
+    public const string BuildOptionsJsonFilePath = "ci_build_options.json";
 
     public static void Build()
     {
@@ -177,13 +176,9 @@ public static class JenkinsBuilder
         return target switch
         {
             BuildTarget.StandaloneOSX => BuildTargetGroup.Standalone,
-            BuildTarget.StandaloneOSXIntel => BuildTargetGroup.Standalone,
             BuildTarget.StandaloneWindows => BuildTargetGroup.Standalone,
-            BuildTarget.StandaloneLinux => BuildTargetGroup.Standalone,
             BuildTarget.StandaloneWindows64 => BuildTargetGroup.Standalone,
             BuildTarget.StandaloneLinux64 => BuildTargetGroup.Standalone,
-            BuildTarget.StandaloneLinuxUniversal => BuildTargetGroup.Standalone,
-            BuildTarget.StandaloneOSXIntel64 => BuildTargetGroup.Standalone,
             BuildTarget.XboxOne => BuildTargetGroup.XboxOne,
             BuildTarget.iOS => BuildTargetGroup.iOS,
             BuildTarget.Android => BuildTargetGroup.Android,
