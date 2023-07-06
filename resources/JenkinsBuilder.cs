@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using UnityEditor;
 
@@ -147,9 +148,13 @@ public static class JenkinsBuilder
         }
 #endif
 
-        if (options.scenes != null)
+        if (options.scenes != null && options.scenes.Length > 0)
         {
             buildPlayerOptions.scenes = options.scenes;
+        }
+        else
+        {
+            buildPlayerOptions.scenes = EditorBuildSettings.scenes.Select(x => x.path).ToArray();
         }
 
         if (options.extraScriptingDefines != null)
