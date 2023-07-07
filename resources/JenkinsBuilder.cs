@@ -74,6 +74,7 @@ public static class JenkinsBuilder
 
         TryRunMethod(options.preBuildMethod);
         Debug.Log("buildPlayerOptions:\n" + EditorJsonUtility.ToJson(buildPlayerOptions, true));
+        Debug.Log("buildPlayerOptions.scenes:\n" + string.Join(", ", buildPlayerOptions.scenes));
         BuildPipeline.BuildPlayer(buildPlayerOptions);
         TryRunMethod(options.postBuildMethod);
     }
