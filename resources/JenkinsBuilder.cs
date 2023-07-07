@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using UnityEditor;
 using UnityEngine;
 
@@ -65,7 +66,7 @@ public static class JenkinsBuilder
     public static void Build(CIBuildOptions options)
     {
         EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Standalone, BuildTarget.StandaloneWindows64);
-        BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
+        var buildPlayerOptions = new BuildPlayerOptions();
         SetupCommonOptions(options, ref buildPlayerOptions);
         EditorUserBuildSettings.SwitchActiveBuildTarget(buildPlayerOptions.targetGroup, buildPlayerOptions.target);
 
@@ -73,10 +74,24 @@ public static class JenkinsBuilder
         SetupWebGlOptions(options.webgl, ref buildPlayerOptions);
 
         TryRunMethod(options.preBuildMethod);
-        Debug.Log("buildPlayerOptions:\n" + EditorJsonUtility.ToJson(buildPlayerOptions, true));
-        Debug.Log("buildPlayerOptions.scenes:\n" + string.Join(", ", buildPlayerOptions.scenes));
+        LogBuildPlayerOptions(buildPlayerOptions);
         BuildPipeline.BuildPlayer(buildPlayerOptions);
         TryRunMethod(options.postBuildMethod);
+    }
+
+    private static void LogBuildPlayerOptions(BuildPlayerOptions buildPlayerOptions)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine("buildPlayerOptions:");
+        sb.Append("scenes: ").AppendLine(string.Join(", ", buildPlayerOptions.scenes));
+        sb.Append("extraScriptingDefines: ").AppendLine(string.Join(", ", buildPlayerOptions.scenes));
+        sb.Append("options: ").AppendLine(buildPlayerOptions.options.ToString());
+        sb.Append("locationPathName: ").AppendLine(string.Join(", ", buildPlayerOptions.locationPathName));
+        sb.Append("target: ").AppendLine(string.Join(", ", buildPlayerOptions.target));
+        sb.Append("targetGroup: ").AppendLine(string.Join(", ", buildPlayerOptions.targetGroup));
+        sb.Append("assetBundleManifestPath: ")
+            .AppendLine(string.Join(", ", buildPlayerOptions.assetBundleManifestPath));
+        Debug.Log(sb.ToString());
     }
 
     public static void TryRunMethod(string fullMethodName)
