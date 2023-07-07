@@ -64,7 +64,7 @@ def build(def args,
     dir('Assets/Editor') {
         writeFile file: 'JenkinsBuilder.cs', text: libraryResource('JenkinsBuilder.cs')
     }
-    writeJSON file: 'ci_build_options.json', json: buildOptions
+    writeJSON file: 'ci_build_options.json', json: buildOptions, overwrite: true
     echo 'ci_build_options.json'
     echo writeJSON(json: buildOptions, returnText: true)
 
