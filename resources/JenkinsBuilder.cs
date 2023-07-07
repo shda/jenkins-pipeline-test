@@ -154,7 +154,7 @@ public static class JenkinsBuilder
         }
         else
         {
-            buildPlayerOptions.scenes = EditorBuildSettings.scenes.Select(x => x.path).ToArray();
+            buildPlayerOptions.scenes = EditorBuildSettings.scenes.Where(x => x.enabled).Select(x => x.path).ToArray();
         }
 
         if (options.extraScriptingDefines != null)
