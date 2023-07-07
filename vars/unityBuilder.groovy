@@ -13,6 +13,8 @@ def build(def args,
           String postBuildMethod = null,
           String locationPathName = null
 ) {
+    echo 'unityBuilder.args:'
+    echo writeYAML(args)
     autoDetectUnityVersion = args.autoDetectUnityVersion ?: autoDetectUnityVersion
     unityHubPath = args.unityHubPath ?: unityHubPath
     projectDir = args.projectDir ?: projectDir
@@ -63,6 +65,8 @@ def build(def args,
         writeFile file: 'JenkinsBuilder.cs', text: libraryResource('JenkinsBuilder.cs')
     }
     writeJSON file: 'ci_build_options.json', json: buildOptions
+    echo 'ci_build_options.json'
+    echo writeJSON(json: buildOptions)
 
     additionalParameters += ' -ciOptionsFile ci_build_options.json'
     unity.execute(projectDir: projectDir, methodToExecute: 'JenkinsBuilder.Build', buildTarget: buildTarget, additionalParameters: additionalParameters)
@@ -72,7 +76,7 @@ def getProjectUnityVersionAndRevision(String projectDir) {
     final def expectedLineStart = 'm_EditorVersionWithRevision: '
     def projectVersionPath = "${projectDir}/ProjectSettings/ProjectVersion.txt"
     if (file.exists(projectVersionPath)) {
-        String text = readFile projectVersionPath
+        String text = readFile(projectVersionPath)
         for (final def line in text.readLines()) {
             if (line.startsWith(expectedLineStart)) {
                 def (unityVersion, unityRevision) = line.substring(expectedLineStart.size()).split(' ')
