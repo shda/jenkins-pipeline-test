@@ -66,7 +66,7 @@ def build(def args,
     }
     writeJSON file: 'ci_build_options.json', json: buildOptions
     echo 'ci_build_options.json'
-    echo writeJSON(json: buildOptions)
+    echo writeJSON(json: buildOptions, returnText: true)
 
     additionalParameters += ' -ciOptionsFile ci_build_options.json'
     unity.execute(projectDir: projectDir, methodToExecute: 'JenkinsBuilder.Build', buildTarget: buildTarget, additionalParameters: additionalParameters)
