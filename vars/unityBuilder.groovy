@@ -13,8 +13,7 @@ def build(def args,
           String postBuildMethod = null,
           String locationPathName = null
 ) {
-    echo 'unityBuilder.args:'
-    echo writeYaml(data: args, returnText: true)
+    echo "unityBuilder.args:\n${writeYaml(data: args, returnText: true)}"
     autoDetectUnityVersion = args.autoDetectUnityVersion ?: autoDetectUnityVersion
     unityHubPath = args.unityHubPath ?: unityHubPath
     projectDir = args.projectDir ?: projectDir
