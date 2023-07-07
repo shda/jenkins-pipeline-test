@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
+using UnityEngine;
 
 public static class JenkinsBuilder
 {
@@ -72,6 +73,7 @@ public static class JenkinsBuilder
         SetupWebGlOptions(options.webgl, ref buildPlayerOptions);
 
         TryRunMethod(options.preBuildMethod);
+        Debug.Log("buildPlayerOptions:\n" + EditorJsonUtility.ToJson(buildPlayerOptions, true));
         BuildPipeline.BuildPlayer(buildPlayerOptions);
         TryRunMethod(options.postBuildMethod);
     }
