@@ -186,6 +186,10 @@ public static class JenkinsBuilder
         }
 
         EditorUserBuildSettings.enableHeadlessMode = options.enableHeadlessMode;
+        if (options.enableHeadlessMode)
+        {
+            buildPlayerOptions.options |= BuildOptions.EnableHeadlessMode;
+        }
     }
 
     private static BuildTargetGroup GetTargetGroupFromTarget(BuildTarget target)
