@@ -28,6 +28,8 @@ def execute(
     buildTarget = args.buildTarget ?: buildTarget
     logFile = args.logFile ?: logFile
     noGraphics = args.noGraphics ?: noGraphics
+    echo "noGraphics: ${noGraphics}"
+    echo "unity.args:\n${writeYaml(data: args, returnText: true)}"
     additionalParameters = args.additionalParameters ?: additionalParameters
     outputLogOnFailure = args.outputLogOnFailure ?: outputLogOnFailure
 
