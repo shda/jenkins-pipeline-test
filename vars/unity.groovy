@@ -29,7 +29,7 @@ def execute(
     logFile = args.logFile ?: logFile
     noGraphics = args.noGraphics != null ? args.noGraphics.toBoolean() : noGraphics
     additionalParameters = args.additionalParameters ?: additionalParameters
-    outputLogOnFailure = args.outputLogOnFailure == null ? args.outputLogOnFailure.toBoolean() : outputLogOnFailure
+    outputLogOnFailure = args.outputLogOnFailure != null ? args.outputLogOnFailure.toBoolean() : outputLogOnFailure
 
     ensureUnityExecutableExists(UnityConfiguration.unityPath)
     ensureProjectDirectoryExists(projectDir);
@@ -127,7 +127,7 @@ private def testPlatformIsValid(String platform) {
     }
 
     log.error("Invalid test platform '${platform}' specified. Valid platforms: ${possiblePlatforms.join(', ')}.")
-    return false;
+    return false
 }
 
 private def ensureUnityExecutableExists(String unityPath) {
