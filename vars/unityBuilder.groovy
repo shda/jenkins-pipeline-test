@@ -13,12 +13,12 @@ def build(def args,
           String postBuildMethod = null,
           String locationPathName = null
 ) {
-    autoDetectUnityVersion = args.autoDetectUnityVersion != null ? args.autoDetectUnityVersion : autoDetectUnityVersion
+    autoDetectUnityVersion = args.autoDetectUnityVersion != null ? args.autoDetectUnityVersion.toBoolean() : autoDetectUnityVersion
     unityHubPath = args.unityHubPath ?: unityHubPath
     projectDir = args.projectDir ?: projectDir
     scenes = args.scenes ?: scenes
     buildTarget = args.buildTarget ?: buildTarget
-    serverMode = args.serverMode != null ? args.serverMode : serverMode
+    serverMode = args.serverMode != null ? args.serverMode.toBoolean() : serverMode
     additionalParameters = args.additionalParameters ?: additionalParameters ?: ''
     extraScriptingDefines = args.extraScriptingDefines ?: extraScriptingDefines
     preBuildMethod = args.preBuildMethod ?: preBuildMethod

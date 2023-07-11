@@ -27,9 +27,9 @@ def execute(
     methodToExecute = args.methodToExecute ?: methodToExecute
     buildTarget = args.buildTarget ?: buildTarget
     logFile = args.logFile ?: logFile
-    noGraphics = args.noGraphics != null ? args.noGraphics : noGraphics
+    noGraphics = args.noGraphics != null ? args.noGraphics.toBoolean() : noGraphics
     additionalParameters = args.additionalParameters ?: additionalParameters
-    outputLogOnFailure = args.outputLogOnFailure == null ? args.outputLogOnFailure : outputLogOnFailure
+    outputLogOnFailure = args.outputLogOnFailure == null ? args.outputLogOnFailure.toBoolean() : outputLogOnFailure
 
     ensureUnityExecutableExists(UnityConfiguration.unityPath)
     ensureProjectDirectoryExists(projectDir);
