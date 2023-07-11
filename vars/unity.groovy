@@ -27,11 +27,9 @@ def execute(
     methodToExecute = args.methodToExecute ?: methodToExecute
     buildTarget = args.buildTarget ?: buildTarget
     logFile = args.logFile ?: logFile
-    noGraphics = args.noGraphics ?: noGraphics
-    echo "noGraphics: ${noGraphics}"
-    echo "unity.args:\n${writeYaml(data: args, returnText: true)}"
+    noGraphics = args.noGraphics != null ? args.noGraphics : noGraphics
     additionalParameters = args.additionalParameters ?: additionalParameters
-    outputLogOnFailure = args.outputLogOnFailure ?: outputLogOnFailure
+    outputLogOnFailure = args.outputLogOnFailure == null ? args.outputLogOnFailure : outputLogOnFailure
 
     ensureUnityExecutableExists(UnityConfiguration.unityPath)
     ensureProjectDirectoryExists(projectDir);
