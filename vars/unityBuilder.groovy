@@ -68,7 +68,7 @@ def build(def args,
     echo writeJSON(json: buildOptions, returnText: true)
 
     additionalParameters += ' -ciOptionsFile ci_build_options.json'
-    unity.execute(projectDir: projectDir, methodToExecute: 'JenkinsBuilder.Build', buildTarget: buildTarget, additionalParameters: additionalParameters)
+    unity.execute(projectDir: projectDir, methodToExecute: 'JenkinsBuilder.Build', buildTarget: buildTarget, noGraphics: serverMode, additionalParameters: additionalParameters)
 }
 
 def getProjectUnityVersionAndRevision(String projectDir) {
