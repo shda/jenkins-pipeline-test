@@ -56,7 +56,13 @@ pipeline {
                 script {
                     def buildArchivePath = "${BUILD_TAG}.zip"
                     zip zipFile: buildArchivePath, dir: '.Build/Win', overwrite: true, archive: true
+                    del
                 }
+            }
+        }
+        stage('Clear') {
+            steps{
+
             }
         }
     }
