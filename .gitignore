@@ -30,3 +30,4 @@ bin/
 
 lib/
 *.iml
+.idea/
