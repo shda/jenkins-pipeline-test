@@ -162,7 +162,7 @@ public static class JenkinsBuilder
 #if UNITY_2021_2_OR_NEWER
         if (options.buildSubTarget != null)
         {
-            buildPlayerOptions.subtarget = ParseEnum<StandaloneBuildSubtarget>(options.buildSubTarget);
+            buildPlayerOptions.subtarget = (int) ParseEnum<StandaloneBuildSubtarget>(options.buildSubTarget);
         }
 #endif
 
