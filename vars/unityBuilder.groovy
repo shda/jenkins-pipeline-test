@@ -1,61 +1,51 @@
-def build(def args,
-          String projectDir = '.',
-          String unityHubPath = '',
-          Boolean autoDetectUnityVersion = true,
-          String unityVersion = null,
-          String unityRevision = null,
-          String[] scenes = null,
-          String buildTarget = null,
-          Boolean serverMode = false,
-          String additionalParameters = null,
-          String[] extraScriptingDefines = null,
-          String preBuildMethod = null,
-          String postBuildMethod = null,
-          String locationPathName = null
-) {
-    autoDetectUnityVersion = args.autoDetectUnityVersion != null ? args.autoDetectUnityVersion.toBoolean() : autoDetectUnityVersion
-    unityHubPath = args.unityHubPath ?: unityHubPath
-    projectDir = args.projectDir ?: projectDir
-    scenes = args.scenes ?: scenes
-    buildTarget = args.buildTarget ?: buildTarget
-    serverMode = args.serverMode != null ? args.serverMode.toBoolean() : serverMode
-    additionalParameters = args.additionalParameters ?: additionalParameters ?: ''
-    extraScriptingDefines = args.extraScriptingDefines ?: extraScriptingDefines
-    preBuildMethod = args.preBuildMethod ?: preBuildMethod
-    postBuildMethod = args.postBuildMethod ?: postBuildMethod
-    locationPathName = args.locationPathName ?: locationPathName
+def build(def options) {
+    def autoDetectUnityVersion = options.autoDetectUnityVersion?.toBoolean() ?: true
+    def unityHubPath = options.unityHubPath
+    def projectDir = options.projectDir
+    def scenes = options.scenes
+    def buildTarget = options.buildTarget
+    def serverMode = options.standalone?.serverMode?.toBoolean() ?: false
+    def additionalParameters = options.additionalParameters ?: ''
+    def extraScriptingDefines = options.extraScriptingDefines
+    def preBuildMethod = options.preBuildMethod
+    def postBuildMethod = options.postBuildMethod
+
+    def (outputPath, locationPathName) = getOutputPathAndLocationPathName(options)
+
+    String unityVersion
+    String unityRevision
 
     if (autoDetectUnityVersion) {
         (unityVersion, unityRevision) = getProjectUnityVersionAndRevision(projectDir)
         log.info("required unityVersion: ${unityVersion} (${unityRevision})")
     } else {
-        unityVersion = args.unityVersion ?: unityVersion
-        unityRevision = args.unityRevision ?: unityRevision
+        unityVersion = options.unityVersion
+        unityRevision = options.unityRevision
     }
 
     unityHub.init(unityHubPath)
     def unityPath = unityHub.getUnityPath(unityVersion, unityRevision, false)
     unity.init(unityPath)
 
-    buildOptions = new HashMap<String, Object>()
+    def buildOptions = [:]
 
     buildOptions['locationPathName'] = locationPathName
     buildOptions['buildTarget'] = buildTarget
 
-    if (buildOptions) {
-        buildOptions['scenes'] = scenes
+    if (scenes) {
+        buildOptions.scenes = scenes
     }
-    if (buildOptions) {
-        buildOptions['extraScriptingDefines'] = extraScriptingDefines
+    if (extraScriptingDefines) {
+        buildOptions.extraScriptingDefines = extraScriptingDefines
     }
-    if (buildOptions) {
-        buildOptions['preBuildMethod'] = preBuildMethod
+    if (preBuildMethod) {
+        buildOptions.preBuildMethod = preBuildMethod
     }
-    if (buildOptions) {
-        buildOptions['postBuildMethod'] = postBuildMethod
+    if (postBuildMethod) {
+        buildOptions.postBuildMethod = postBuildMethod
     }
-    buildOptions['enableHeadlessMode'] = serverMode
     if (serverMode) {
+        buildOptions.enableHeadlessMode = true
         buildOptions['buildSubTarget'] = 'Server'
     }
 
@@ -68,6 +58,10 @@ def build(def args,
 
     additionalParameters += ' -ciOptionsFile ci_build_options.json'
     unity.execute(projectDir: projectDir, methodToExecute: 'JenkinsBuilder.Build', buildTarget: buildTarget, noGraphics: serverMode, additionalParameters: additionalParameters)
+
+    return [
+            outputPath: outputPath
+    ]
 }
 
 def getProjectUnityVersionAndRevision(String projectDir) {
@@ -83,4 +77,29 @@ def getProjectUnityVersionAndRevision(String projectDir) {
         }
     }
     return ['', '']
+}
+
+def getOutputPathAndLocationPathName(def options) {
+    def buildTarget = options.buildTarget
+    def buildName = options.buildName
+    def outputDir = "Build/${buildName}"
+    String locationPathName
+    switch (buildTarget.toLowerCase()) {
+        case 'standalonewindows64':
+        case 'standalonelinux64':
+            def standalone = options.standalone
+            def executableName = standalone?.executableName ?: 'app'
+            def ext = buildTarget == 'StandaloneWindows64' ? '.exe' : ''
+            return [outputDir, "${outputDir}/${executableName}${ext}"]
+        case 'webgl':
+            return [outputDir, outputDir]
+        case 'android':
+            def android = options.android
+            def ext = android?.buildAppBundle ? '.aab' : '.apk'
+            locationPathName = "${outputDir}${ext}"
+            return [locationPathName, locationPathName]
+        default:
+            error("buildTarget ${buildTarget} not supported")
+            break
+    }
 }
