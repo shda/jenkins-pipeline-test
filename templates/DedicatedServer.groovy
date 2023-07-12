@@ -1,3 +1,7 @@
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
+
 @Library('unity') _
 
 pipeline {
@@ -54,7 +58,7 @@ pipeline {
                 script {
                     def buildArchivePath = "${env.OUTPUT_PATH}.zip"
                     zip zipFile: buildArchivePath, dir: env.OUTPUT_PATH, overwrite: true, archive: true
-                    new File(buildArchivePath).delete()
+                    Files.delete(Paths.get(buildArchivePath))
                 }
             }
         }
