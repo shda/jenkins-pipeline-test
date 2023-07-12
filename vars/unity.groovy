@@ -137,7 +137,7 @@ private def ensureUnityExecutableExists(String unityPath) {
 }
 
 private def ensureProjectDirectoryExists(String projectDirectory) {
-    if (projectDirectory == '' || !exists(projectDirectory)) {
+    if (projectDirectory == '' || !fileExists(projectDirectory)) {
         error("Project directory does not exist! (${projectDirectory})")
     }
 }
