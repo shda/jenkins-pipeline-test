@@ -51,7 +51,7 @@ pipeline {
                 script {
                     def buildArchivePath = "${env.OUTPUT_PATH}.zip"
                     zip zipFile: buildArchivePath, dir: env.OUTPUT_PATH, overwrite: true, archive: true
-                    new File(buildArchivePath).delete()
+                    file.deleteFile(buildArchivePath)
                 }
             }
         }

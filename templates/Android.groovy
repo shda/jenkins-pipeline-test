@@ -12,6 +12,10 @@ pipeline {
         GIT_CREDENTIALS_ID = 'bitbucket'
 
         EXTRA_SCRIPT_DEFINES = ''
+
+//        KEYSTORE = credentials('cryptotanks-keystore')
+        KEYSTORE_PASS = credentials('cryptotanks-keystore-pass')
+        KEYALIAS_PASS = credentials('cryptotanks-keyalias-pass')
     }
 
     agent {
@@ -39,10 +43,10 @@ pipeline {
                                     //false: apk, true: aab
                                     buildAppBundle: false,
                                     keystoreName  : 'user.keystore', //in project dir
-//                                    keystoreName  : credentials('cryptotanks-keystore'),
-                                    keystorePass  : credentials('cryptotanks-keystore-pass'),
+//                                    keystoreName  : env.KEYSTORE,
+                                    keystorePass  : env.KEYSTORE_PASS,
                                     keyaliasName  : 'release',
-                                    keyaliasPass  : credentials('cryptotanks-keyalias-pass')
+                                    keyaliasPass  : env.KEYALIAS_PASS
                             ]
                     ]
                     def report = unityBuilder.build(options)
@@ -53,7 +57,7 @@ pipeline {
         stage('Cleanup') {
             steps {
                 script {
-                    new File(env.BUILD_ARCHIVE_PATH).delete()
+                    file.deleteFile(env.BUILD_ARCHIVE_PATH)
                 }
             }
         }
