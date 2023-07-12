@@ -15,7 +15,6 @@ pipeline {
         EXTRA_SCRIPT_DEFINES = ''
 
         CLEAR_BUILD_DIR_AFTER_COMPLETED = 'true'
-        CLEAR_BUILD_ARTIFACT_AFTER_COMPLETED = 'true'
     }
 
     agent {
@@ -50,23 +49,20 @@ pipeline {
         stage('Zip') {
             steps {
                 script {
-                    def buildArchivePath = "${BUILD_TAG}.zip"
-                    env.BUILD_ARCHIVE_PATH = buildArchivePath
+                    def buildArchivePath = "${env.OUTPUT_PATH}.zip"
                     zip zipFile: buildArchivePath, dir: env.OUTPUT_PATH, overwrite: true, archive: true
+                    new File(buildArchivePath).delete()
                 }
             }
         }
         stage('Cleanup') {
+            when {
+                expression { env.CLEAR_BUILD_DIR_AFTER_COMPLETED.toBoolean() }
+            }
             steps {
-                script {
-                    if (env.CLEAR_BUILD_DIR_AFTER_COMPLETED.toBoolean()) {
-                        deleteDir env.OUTPUT_PATH
-                    }
-                    if (env.CLEAR_BUILD_ARTIFACT_AFTER_COMPLETED.toBoolean()) {
-                        new File(env.BUILD_ARCHIVE_PATH).delete()
-                    }
+                dir(env.OUTPUT_PATH) {
+                    deleteDir()
                 }
-
             }
         }
     }

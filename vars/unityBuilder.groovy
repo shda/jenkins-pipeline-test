@@ -29,8 +29,8 @@ def build(def options) {
 
     def buildOptions = [:]
 
-    buildOptions['locationPathName'] = locationPathName
-    buildOptions['buildTarget'] = buildTarget
+    buildOptions.locationPathName = locationPathName
+    buildOptions.buildTarget = buildTarget
 
     if (scenes) {
         buildOptions.scenes = scenes
@@ -46,13 +46,13 @@ def build(def options) {
     }
     if (serverMode) {
         buildOptions.enableHeadlessMode = true
-        buildOptions['buildSubTarget'] = 'Server'
+        buildOptions.buildSubTarget = 'Server'
     }
     if (options.android){
-        buildOptions.android = android
+        buildOptions.android = options.android
     }
     if (options.webgl){
-        buildOptions.webgl = webgl
+        buildOptions.webgl = options.webgl
     }
 
     dir('Assets/Editor') {

@@ -12,8 +12,6 @@ pipeline {
         GIT_CREDENTIALS_ID = 'bitbucket'
 
         EXTRA_SCRIPT_DEFINES = ''
-
-        CLEAR_BUILD_ARTIFACT_AFTER_COMPLETED = 'true'
     }
 
     agent {
@@ -55,11 +53,8 @@ pipeline {
         stage('Cleanup') {
             steps {
                 script {
-                    if (env.CLEAR_BUILD_ARTIFACT_AFTER_COMPLETED.toBoolean()) {
-                        new File(env.BUILD_ARCHIVE_PATH).delete()
-                    }
+                    new File(env.BUILD_ARCHIVE_PATH).delete()
                 }
-
             }
         }
     }

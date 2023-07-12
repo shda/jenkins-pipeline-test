@@ -54,6 +54,7 @@ pipeline {
                 script {
                     def buildArchivePath = "${env.OUTPUT_PATH}.zip"
                     zip zipFile: buildArchivePath, dir: env.OUTPUT_PATH, overwrite: true, archive: true
+                    new File(buildArchivePath).delete()
                 }
             }
         }
@@ -62,7 +63,9 @@ pipeline {
                 expression { env.CLEAR_BUILD_DIR_AFTER_COMPLETED.toBoolean() }
             }
             steps {
-                deleteDir env.OUTPUT_PATH
+                dir(env.OUTPUT_PATH) {
+                    deleteDir()
+                }
             }
         }
     }
