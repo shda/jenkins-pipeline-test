@@ -5,21 +5,19 @@ pipeline {
         AUTO_DETECT_UNITY_VERSION = 'true'
 //        AUTO_DETECT_UNITY_VERSION = 'false'
 //        UNITY_VERSION = '2022.3.1f1'
-        BUILD_TARGET = 'StandaloneWindows64' //Required
-//        BUILD_TARGET = 'StandaloneLinux64'
+        BUILD_TARGET = 'Android' //Required
         PROJECT_DIR = '.' //Required
         GIT_URL = 'https://bitbucket.org/prosaas/cryptotanks-unity.git' //Required
-        GIT_BRANCH = 'feature/unity_2022_1_dev_gs' //Required
+        GIT_BRANCH = 'master' //Required
         GIT_CREDENTIALS_ID = 'bitbucket'
 
-        EXTRA_SCRIPT_DEFINES = 'UNITY_SERVER'
-        EXECUTABLE_NAME = 'gs'
+        EXTRA_SCRIPT_DEFINES = ''
 
-        CLEAR_BUILD_DIR_AFTER_COMPLETED = 'true'
+        CLEAR_BUILD_ARTIFACT_AFTER_COMPLETED = 'true'
     }
 
     agent {
-        label 'unity'
+        label 'unity && unity-pro'
     }
 
     stages {
@@ -39,9 +37,14 @@ pipeline {
                             buildTarget           : env.BUILD_TARGET,
                             extraScriptingDefines : env.EXTRA_SCRIPT_DEFINES?.split('[, ]'),
                             buildName             : BUILD_TAG,
-                            standalone            : [
-                                    serverMode    : true,
-                                    executableName: env.EXECUTABLE_NAME
+                            android               : [
+                                    //false: apk, true: aab
+                                    buildAppBundle: false,
+                                    keystoreName  : 'user.keystore', //in project dir
+//                                    keystoreName  : credentials('cryptotanks-keystore'),
+                                    keystorePass  : credentials('cryptotanks-keystore-pass'),
+                                    keyaliasName  : 'release',
+                                    keyaliasPass  : credentials('cryptotanks-keyalias-pass')
                             ]
                     ]
                     def report = unityBuilder.build(options)
@@ -49,20 +52,14 @@ pipeline {
                 }
             }
         }
-        stage('Zip') {
+        stage('Cleanup') {
             steps {
                 script {
-                    def buildArchivePath = "${env.OUTPUT_PATH}.zip"
-                    zip zipFile: buildArchivePath, dir: env.OUTPUT_PATH, overwrite: true, archive: true
+                    if (env.CLEAR_BUILD_ARTIFACT_AFTER_COMPLETED.toBoolean()) {
+                        new File(env.BUILD_ARCHIVE_PATH).delete()
+                    }
                 }
-            }
-        }
-        stage('Cleanup') {
-            when {
-                expression { env.CLEAR_BUILD_DIR_AFTER_COMPLETED.toBoolean() }
-            }
-            steps {
-                deleteDir env.OUTPUT_PATH
+
             }
         }
     }

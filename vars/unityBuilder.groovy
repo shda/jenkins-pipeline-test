@@ -48,6 +48,12 @@ def build(def options) {
         buildOptions.enableHeadlessMode = true
         buildOptions['buildSubTarget'] = 'Server'
     }
+    if (options.android){
+        buildOptions.android = android
+    }
+    if (options.webgl){
+        buildOptions.webgl = webgl
+    }
 
     dir('Assets/Editor') {
         writeFile file: 'JenkinsBuilder.cs', text: libraryResource('JenkinsBuilder.cs')
@@ -67,7 +73,7 @@ def build(def options) {
 def getProjectUnityVersionAndRevision(String projectDir) {
     final def expectedLineStart = 'm_EditorVersionWithRevision: '
     def projectVersionPath = "${projectDir}/ProjectSettings/ProjectVersion.txt"
-    if (file.exists(projectVersionPath)) {
+    if (fileExists(projectVersionPath)) {
         String text = readFile(projectVersionPath)
         for (final def line in text.readLines()) {
             if (line.startsWith(expectedLineStart)) {

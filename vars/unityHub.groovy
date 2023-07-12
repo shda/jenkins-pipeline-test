@@ -96,7 +96,7 @@ def getUnityPath(String editorVersion, String editorVersionRevision = '', boolea
 }
 
 private def ensureUnityHubExecutableExists(String unityHubPath) {
-    if (!file.exists(unityHubPath)) {
-        failStage("Unity Hub executable not found at specified path! (${unityHubPath})");
+    if (!fileExists(unityHubPath)) {
+        error("Unity Hub executable not found at specified path! (${unityHubPath})");
     }
 }

@@ -5,21 +5,21 @@ pipeline {
         AUTO_DETECT_UNITY_VERSION = 'true'
 //        AUTO_DETECT_UNITY_VERSION = 'false'
 //        UNITY_VERSION = '2022.3.1f1'
-        BUILD_TARGET = 'StandaloneWindows64' //Required
+        BUILD_TARGET = 'WebGL' //Required
 //        BUILD_TARGET = 'StandaloneLinux64'
         PROJECT_DIR = '.' //Required
         GIT_URL = 'https://bitbucket.org/prosaas/cryptotanks-unity.git' //Required
-        GIT_BRANCH = 'feature/unity_2022_1_dev_gs' //Required
+        GIT_BRANCH = 'master' //Required
         GIT_CREDENTIALS_ID = 'bitbucket'
 
-        EXTRA_SCRIPT_DEFINES = 'UNITY_SERVER'
-        EXECUTABLE_NAME = 'gs'
+        EXTRA_SCRIPT_DEFINES = ''
 
         CLEAR_BUILD_DIR_AFTER_COMPLETED = 'true'
+        CLEAR_BUILD_ARTIFACT_AFTER_COMPLETED = 'true'
     }
 
     agent {
-        label 'unity'
+        label 'unity && unity-pro'
     }
 
     stages {
@@ -39,9 +39,7 @@ pipeline {
                             buildTarget           : env.BUILD_TARGET,
                             extraScriptingDefines : env.EXTRA_SCRIPT_DEFINES?.split('[, ]'),
                             buildName             : BUILD_TAG,
-                            standalone            : [
-                                    serverMode    : true,
-                                    executableName: env.EXECUTABLE_NAME
+                            webgl            : [
                             ]
                     ]
                     def report = unityBuilder.build(options)
@@ -52,17 +50,23 @@ pipeline {
         stage('Zip') {
             steps {
                 script {
-                    def buildArchivePath = "${env.OUTPUT_PATH}.zip"
+                    def buildArchivePath = "${BUILD_TAG}.zip"
+                    env.BUILD_ARCHIVE_PATH = buildArchivePath
                     zip zipFile: buildArchivePath, dir: env.OUTPUT_PATH, overwrite: true, archive: true
                 }
             }
         }
         stage('Cleanup') {
-            when {
-                expression { env.CLEAR_BUILD_DIR_AFTER_COMPLETED.toBoolean() }
-            }
             steps {
-                deleteDir env.OUTPUT_PATH
+                script {
+                    if (env.CLEAR_BUILD_DIR_AFTER_COMPLETED.toBoolean()) {
+                        deleteDir env.OUTPUT_PATH
+                    }
+                    if (env.CLEAR_BUILD_ARTIFACT_AFTER_COMPLETED.toBoolean()) {
+                        new File(env.BUILD_ARCHIVE_PATH).delete()
+                    }
+                }
+
             }
         }
     }

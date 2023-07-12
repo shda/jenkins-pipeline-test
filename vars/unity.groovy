@@ -64,7 +64,7 @@ def execute(
             log(logContent)
         }
 
-        failStage('Unity method exited with a non-zero exit code!');
+        error('Unity method exited with a non-zero exit code!');
     }
 }
 
@@ -131,13 +131,13 @@ private def testPlatformIsValid(String platform) {
 }
 
 private def ensureUnityExecutableExists(String unityPath) {
-    if (!file.exists(unityPath)) {
-        failStage("Unity executable not found at specified path! (${unityPath})");
+    if (!fileExists(unityPath)) {
+        error("Unity executable not found at specified path! (${unityPath})");
     }
 }
 
 private def ensureProjectDirectoryExists(String projectDirectory) {
     if (projectDirectory == '' || !file.dirExists(projectDirectory)) {
-        failStage("Project directory does not exist! (${projectDirectory})")
+        error("Project directory does not exist! (${projectDirectory})")
     }
 }
