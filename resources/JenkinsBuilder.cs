@@ -75,8 +75,19 @@ public static class JenkinsBuilder
 
         TryRunMethod(options.preBuildMethod);
         LogBuildPlayerOptions(buildPlayerOptions);
-        BuildPipeline.BuildPlayer(buildPlayerOptions);
-        TryRunMethod(options.postBuildMethod);
+        var buildPlayer = BuildPipeline.BuildPlayer(buildPlayerOptions);
+        if (buildPlayer.summary.totalErrors > 0)
+        {
+            if (TryGetCommandLineArgValue("batchmode", out _))
+            {
+                Console.Error.WriteLine("totalErrors: " + buildPlayer.summary.totalErrors);
+                EditorApplication.Exit(1);
+            }
+        }
+        else
+        {
+            TryRunMethod(options.postBuildMethod);
+        }
     }
 
     private static void LogBuildPlayerOptions(BuildPlayerOptions buildPlayerOptions)
@@ -162,7 +173,14 @@ public static class JenkinsBuilder
 #if UNITY_2021_2_OR_NEWER
         if (options.buildSubTarget != null)
         {
-            buildPlayerOptions.subtarget = (int) ParseEnum<StandaloneBuildSubtarget>(options.buildSubTarget);
+            buildPlayerOptions.subtarget = (int)ParseEnum<StandaloneBuildSubtarget>(options.buildSubTarget);
+        }
+#endif
+#if !UNITY_2021_2_OR_NEWER
+        EditorUserBuildSettings.enableHeadlessMode = options.enableHeadlessMode;
+        if (options.enableHeadlessMode)
+        {
+            buildPlayerOptions.options |= BuildOptions.EnableHeadlessMode;
         }
 #endif
 
@@ -183,12 +201,6 @@ public static class JenkinsBuilder
         if (options.locationPathName != null)
         {
             buildPlayerOptions.locationPathName = options.locationPathName;
-        }
-
-        EditorUserBuildSettings.enableHeadlessMode = options.enableHeadlessMode;
-        if (options.enableHeadlessMode)
-        {
-            buildPlayerOptions.options |= BuildOptions.EnableHeadlessMode;
         }
     }
 
@@ -224,7 +236,9 @@ public static class JenkinsBuilder
         public string[] scenes;
         public string[] extraScriptingDefines;
         public string locationPathName;
+#if !UNITY_2021_2_OR_NEWER
         public bool enableHeadlessMode;
+#endif
         public string preBuildMethod;
         public string postBuildMethod;
         public AndroidOptions android;
