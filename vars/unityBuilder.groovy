@@ -1,10 +1,10 @@
 def build(def options) {
-    def autoDetectUnityVersion = options.autoDetectUnityVersion?.toBoolean() ?: true
+    def autoDetectUnityVersion = (options.autoDetectUnityVersion ?: false).toBoolean()
     def unityHubPath = options.unityHubPath
     def projectDir = options.projectDir
     def scenes = options.scenes
     def buildTarget = options.buildTarget
-    def serverMode = options.standalone?.serverMode?.toBoolean() ?: false
+    def serverMode = (options.standalone?.serverMode ?: false).toBoolean()
     def additionalParameters = options.additionalParameters ?: ''
     def extraScriptingDefines = options.extraScriptingDefines
     def preBuildMethod = options.preBuildMethod
