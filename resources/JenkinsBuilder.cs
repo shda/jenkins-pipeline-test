@@ -230,15 +230,11 @@ public static class JenkinsBuilder
     public class CIBuildOptions
     {
         public string buildTarget;
-#if UNITY_2021_2_OR_NEWER
         public string buildSubTarget;
-#endif
         public string[] scenes;
         public string[] extraScriptingDefines;
         public string locationPathName;
-#if !UNITY_2021_2_OR_NEWER
         public bool enableHeadlessMode;
-#endif
         public string preBuildMethod;
         public string postBuildMethod;
         public AndroidOptions android;
